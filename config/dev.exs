@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :xplr1, Xplr1.Repo,
-  username: "postgres",
-  password: "postgres",
+  # username: "postgres",
+  # password: "postgres",
   hostname: "localhost",
   database: "xplr1_dev",
   stacktrace: true,

@@ -7,6 +7,11 @@ defmodule Xplr1.Application do
 
   @impl true
   def start(_type, _args) do
+    unless Mix.env() == :prod do
+      Dotenv.load()
+      Mix.Task.run("loadconfig")
+    end
+
     children = [
       Xplr1Web.Telemetry,
       # Xplr1.Repo,
