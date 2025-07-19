@@ -18,6 +18,7 @@ defmodule Xplr1Web.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/chat", Chat.Index, :index
   end
 
   # Other scopes may use custom stacks.
