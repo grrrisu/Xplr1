@@ -31,7 +31,8 @@ config :xplr1, Xplr1Web.Endpoint,
 # at the `config/runtime.exs`.
 config :xplr1, Xplr1.Mailer, adapter: Swoosh.Adapters.Local
 
-config :xplr1, :api_client, plug: {Req.Test, Xplr1.OpenaiClient}
+config :xplr1, :openai_client, plug: {Req.Test, Xplr1.OpenaiClient}
+config :xplr1, :anthropic_client, plug: {Req.Test, Xplr1.AnthropicClient}
 
 # Configure esbuild (the version is required)
 config :esbuild,

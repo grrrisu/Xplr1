@@ -27,11 +27,11 @@ defmodule Xplr1.OpenaiClient do
       temperature: 0.9
     }
 
-    plug = Application.get_env(:xplr1, :api_client, nil) |> Keyword.get(:plug)
+    plug = Application.get_env(:xplr1, :openai_client, plug: nil) |> Keyword.get(:plug)
 
     case Req.post(@api_url, json: body, headers: headers, plug: plug) do
       {:ok, %{status: 200, body: response}} ->
-        {:ok, extract_content(response |> dbg())}
+        {:ok, extract_content(response)}
 
       {:ok, %{status: status, body: body}} ->
         {:error, "HTTP #{status}: #{inspect(body)}"}
