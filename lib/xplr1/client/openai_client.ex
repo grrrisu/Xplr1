@@ -1,21 +1,30 @@
 defmodule Xplr1.OpenaiClient do
+  alias Xplr1.Client
+
   @api_url "https://api.openai.com/v1/chat/completions"
 
   def call_api(message, choices \\ 1) do
-    {:ok, api_key} = System.fetch_env("OPENAI_API_KEY")
+    api_key = Client.get_api_key("OPENAI_API_KEY")
+    Client.mock_request(Xplr1.OpenaiClient, "test/fixtures/openai_response.json")
 
-    Req.Test.stub(Xplr1.OpenaiClient, fn conn ->
-      {:ok, content} = File.read("test/fixtures/openai_response.json")
-      {:ok, json} = Jason.decode(content)
-      Req.Test.json(conn, json)
-    end)
+    [
+      headers: headers(api_key),
+      json: body(message, choices),
+      url: @api_url,
+      plug: Client.get_plug(:openai_client)
+    ]
+    |> Client.call_api(&extract_content/1)
+  end
 
-    headers = [
+  def headers(api_key) do
+    [
       {"Content-Type", "application/json"},
       {"Authorization", "Bearer #{api_key}"}
     ]
+  end
 
-    body = %{
+  def body(message, choices) do
+    %{
       model: "gpt-4.1-nano",
       messages: [
         %{role: "user", content: message}
@@ -26,19 +35,6 @@ defmodule Xplr1.OpenaiClient do
       # Higher temperature for more variety
       temperature: 0.9
     }
-
-    plug = Application.get_env(:xplr1, :openai_client, plug: nil) |> Keyword.get(:plug)
-
-    case Req.post(@api_url, json: body, headers: headers, plug: plug) do
-      {:ok, %{status: 200, body: response}} ->
-        {:ok, extract_content(response)}
-
-      {:ok, %{status: status, body: body}} ->
-        {:error, "HTTP #{status}: #{inspect(body)}"}
-
-      {:error, reason} ->
-        {:error, "Request failed: #{inspect(reason)}"}
-    end
   end
 
   defp extract_content(%{"choices" => choices}) do
