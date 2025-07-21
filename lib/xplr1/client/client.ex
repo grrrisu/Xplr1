@@ -11,9 +11,10 @@ defmodule Xplr1.Client do
 
   def mock_request(key, file) do
     Req.Test.stub(key, fn conn ->
-      {:ok, content} = File.read(file)
-      {:ok, json} = Jason.decode(content)
-      Req.Test.json(conn, json)
+      with {:ok, content} <- File.read(file),
+           {:ok, json} <- Jason.decode(content) do
+        Req.Test.json(conn, json)
+      end
     end)
   end
 
