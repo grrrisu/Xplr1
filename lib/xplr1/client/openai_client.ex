@@ -2,16 +2,18 @@ defmodule Xplr1.OpenaiClient do
   alias Xplr1.Client
 
   @api_url "https://api.openai.com/v1/chat/completions"
+  # gpt-4, gpt-4.1-nano
+  @model "gpt-4.1-nano"
 
   def call_api(message, choices \\ 1) do
-    api_key = Client.get_api_key("OPENAI_API_KEY")
+    config = Application.get_env(:xplr1, :openai_client)
     Client.mock_request(Xplr1.OpenaiClient, "test/fixtures/openai_response.json")
 
     [
-      headers: headers(api_key),
+      headers: headers(config[:api_key]),
       json: body(message, choices),
       url: @api_url,
-      plug: Client.get_plug(:openai_client)
+      plug: config[:plug]
     ]
     |> Client.call_api(&extract_content/1)
   end
@@ -25,7 +27,7 @@ defmodule Xplr1.OpenaiClient do
 
   def body(message, choices) do
     %{
-      model: "gpt-4.1-nano",
+      model: @model,
       messages: [
         %{role: "user", content: message}
       ],

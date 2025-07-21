@@ -6,8 +6,8 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :xplr1, Xplr1.Repo,
-  username: "postgres",
-  password: "postgres",
+  # username: "postgres",
+  # password: "postgres",
   hostname: "localhost",
   database: "xplr1_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
@@ -22,6 +22,9 @@ config :xplr1, Xplr1Web.Endpoint,
 
 # In test we don't send emails
 config :xplr1, Xplr1.Mailer, adapter: Swoosh.Adapters.Test
+
+config :xplr1, :openai_client, plug: {Req.Test, Xplr1.OpenaiClient}
+config :xplr1, :anthropic_client, plug: {Req.Test, Xplr1.AnthropicClient}
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
