@@ -2,9 +2,11 @@ defmodule Xplr1.AnthropicClient do
   alias Xplr1.Client
 
   @api_url "https://api.anthropic.com/v1/messages"
+  # claude-3-5-sonnet-20241022 or claude-sonnet-4-20250514
+  @model "claude-sonnet-4-20250514"
 
   def call_api(message) do
-    api_key = Client.get_api_key("ANTHROPIC_API_KEY")
+    config = Application.get_env(:xplr1, :anthropic_client)
 
     Client.mock_request(
       Xplr1.AnthropicClient,
@@ -12,10 +14,10 @@ defmodule Xplr1.AnthropicClient do
     )
 
     [
-      headers: headers(api_key),
+      headers: headers(config[:api_key]),
       json: body(message),
       url: @api_url,
-      plug: Client.get_plug(:anthropic_client)
+      plug: config[:plug]
     ]
     |> Client.call_api(&extract_content/1)
   end
@@ -30,8 +32,7 @@ defmodule Xplr1.AnthropicClient do
 
   def body(message) do
     %{
-      # claude-3-5-sonnet-20241022 or claude-sonnet-4-20250514
-      model: "claude-sonnet-4-20250514",
+      model: @model,
       max_tokens: 5000,
       messages: [
         %{role: "user", content: message}

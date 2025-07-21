@@ -66,6 +66,14 @@ config :xplr1, Xplr1Web.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :xplr1, dev_routes: true
 
+config :xplr1, :openai_client,
+  api_key: System.get_env("ANTHROPIC_API_KEY"),
+  plug: {Req.Test, Xplr1.OpenaiClient}
+
+config :xplr1, :anthropic_client,
+  api_key: System.get_env("OPENAI_API_KEY"),
+  plug: {Req.Test, Xplr1.AnthropicClient}
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 

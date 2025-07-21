@@ -55,6 +55,9 @@ if config_env() == :prod do
 
   config :xplr1, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
+  config :xplr1, :openai_client, api_key: System.get_env("ANTHROPIC_API_KEY")
+  config :xplr1, :anthropic_client, api_key: System.get_env("OPENAI_API_KEY")
+
   config :xplr1, Xplr1Web.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
