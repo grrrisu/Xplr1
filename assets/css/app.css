@@ -100,3 +100,4 @@
 [data-phx-root-id] { display: contents }
 
 /* This file is for your main application CSS */
+h2 {@apply text-lg font-bold my-2}
