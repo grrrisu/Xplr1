@@ -6,7 +6,10 @@ defmodule Xplr1Web.Chat.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket |> assign_form() |> assign(context: nil, answers: [], thinking: false)}
+    {:ok,
+     socket
+     |> assign_form()
+     |> assign(context: nil, answers: [], thinking: false)}
   end
 
   defp assign_form(socket, prompt \\ nil) do
@@ -64,18 +67,32 @@ defmodule Xplr1Web.Chat.Index do
   end
 
   def conversation(assigns) do
+    assigns = conversation_answers(assigns)
+
     ~H"""
     <div :if={@thinking} class="text-right">
       <progress class="progress progress-primary w-56"></progress> Thinking...
     </div>
     <div :for={{author, text} <- @answers}>
       <div class={"chat #{chat_align(author)}"}>
-        <div class={"chat-bubble #{chat_color(author)}"}>
-          <pre class="whitespace-pre-line">{text}</pre>
+        <div class={"chat-bubble whitespace-normal #{chat_color(author)}"}>
+          {text}
         </div>
       </div>
     </div>
     """
+  end
+
+  defp conversation_answers(assigns) do
+    assign(assigns,
+      answers:
+        Enum.map(
+          assigns.answers,
+          fn {author, text} ->
+            {author, MDEx.to_html!(text, render: [escape: true]) |> raw()}
+          end
+        )
+    )
   end
 
   defp chat_align(:user), do: "chat-start"
